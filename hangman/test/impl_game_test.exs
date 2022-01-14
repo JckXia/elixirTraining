@@ -57,4 +57,42 @@ test "we recongnize a letter in the word" do
 
 end
 
+
+test "we recongnize a letter  not in the word" do
+  game = Game.new_game("wombat")
+  { game, tally } =Game.make_move(game, "x")
+  assert tally.game_state === :bad_guess
+
+  { game, tally } =Game.make_move(game, "w")
+  assert tally.game_state === :good_guess
+
+  { game, tally } =Game.make_move(game, "y")
+  assert tally.game_state === :bad_guess
+end
+
+test "Can handle a sequence of moves" do
+  # hello
+[
+  # guess #result  #t_left #letters         #letters used
+  ["a", :bad_guess, 6, ["_","_","_","_","_"], ["a"]],
+  ["a", :already_used, 6, ["_","_","_","_","_"], ["a"]],
+  ["e", :good_guess, 6, ["_","e","_","_","_"], ["a","e"]],
+  ["x", :bad_guess,5, ["_","e","_","_","_"], ["a","e","x"]]
+]  |> test_seq_of_moves()
+end
+
+defp test_seq_of_moves(script) do
+  game = Game.new_game("hello")
+  Enum.reduce(script, game, &check_one_move/2)
+end
+
+defp check_one_move([guess, state, turns, letters, used], game) do
+ { game, tally} = Game.make_move(game, guess)
+  assert tally.game_state === state
+  assert tally.turns_left === turns
+  assert tally.letters === letters
+  assert tally.used === used
+  game
+end
+
 end
