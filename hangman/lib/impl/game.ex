@@ -1,8 +1,10 @@
 defmodule Hangman.Impl.Game do
 
-  @type t :: %Hangman.Impl.Game{
+  alias Hangman.Type
+
+  @type t :: %__MODULE__{
     turns_left: integer,
-    game_state: Hangman.state,
+    game_state: Type.state,
     letters: list(String.t),
     used: MapSet.t(String.t),
   }
@@ -16,12 +18,55 @@ defmodule Hangman.Impl.Game do
 
   # Internal data structure
   # number of turns left, letters of words guessed so far
+  ####################
+  @spec new_game() :: t
   def new_game do
-    %Hangman.Impl.Game{
-      letters: Dictionary.random_word |>String.codepoints
+    new_game(Dictionary.random_word)
+  end
+
+  @spec new_game(String.t) :: t
+  def new_game(word) do
+    %__MODULE__{
+      letters: word |> String.codepoints()
     }
   end
 
+  ###################
+  @spec make_move(t,  String.t ) :: { t , Type.tally }
+  def make_move(game = %{ game_state: state} , guess)
+  when state in [:won, :lost] do
+    game
+    |> return_with_tally()
+  end
 
+  def make_move(game , guess) do
+    accept_guess(game, guess, MapSet.member?(game.used, guess))
+    |> return_with_tally()
+  end
+
+  ###########################################
+  defp accept_guess(game, guess, _already_used = true) do
+      %{game | game_state: :already_used}
+  end
+
+  defp accept_guess(game, guess,_already_used) do
+    %{game | used: MapSet.put(game.used, guess)}
+  end
+
+  ######################################
+
+
+  defp return_with_tally(game) do
+    {game, tally(game)}
+  end
+
+  defp tally(game) do
+    %{
+      turns_left: game.turns_left,
+      game_state: game.game_state,
+      letters: [],
+      used: game.used |> MapSet.to_list() |> Enum.sort
+    }
+  end
 
 end
