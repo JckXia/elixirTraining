@@ -7,19 +7,20 @@
 # Treating state as opaque value outside the implementation uses it
 
 # Once client has token, it passes it to successive API calls. API is responsible for reconsituting its internal state
+
+
+# The "assets/words.txt" file gets loaded at compile time via the annotatio.integer()
+
+# start() is used to read in the word list.integer()
+# return the state of the dictionary
 defmodule Dictionary  do
-  @word_list   "assets/words.txt"
-  |> File.read!()
-  |> String.split(~r/\n/, trim: true)
 
-  def random_word do
-    @word_list()
-    |> Enum.random()
-  end
+  alias Dictionary.Impl.WordList
 
-  def hello do
-    IO.puts("Hello world!!!?")
-  end
+
+  defdelegate start, to: WordList, as: :word_list
+
+  defdelegate random_words(words), to: WordList
 
 end
 
