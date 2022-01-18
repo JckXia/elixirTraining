@@ -22,8 +22,8 @@ defmodule Dictionary  do
   @spec start_link() :: {:ok, t }
   defdelegate start_link, to: Server, as: :start_link
 
-  @spec random_word(t) :: String.t
-  defdelegate random_word(words), to: Server, as: :random_word
+  @spec random_word() :: String.t
+  defdelegate random_word(), to: Server, as: :random_word
 
 end
 
