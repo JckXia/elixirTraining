@@ -15,31 +15,31 @@
 # return the state of the dictionary
 defmodule Dictionary  do
 
-  alias Dictionary.Impl.WordList
+  alias Dictionary.Runtime.Server
 
+  @opaque t :: Server.t
 
-  defdelegate start, to: WordList, as: :word_list
+  @spec start_link() :: {:ok, t }
+  defdelegate start_link, to: Server, as: :start_link
 
-  defdelegate random_words(words), to: WordList
+  @spec random_word(t) :: String.t
+  defdelegate random_word(words), to: Server, as: :random_word
 
 end
 
-# defmodule Lists do
-#   def len([]), do: 0
+defmodule Procs do
+  def hello(count) do
+    receive do
+      { :crash , reason } ->
+        exit(reason)
+      {:reset } -> hello(0)
+      {:quit } -> IO.puts("Process exit")
+      {:add, n} -> hello(count + n)
+       msg->
+        # code
+        IO.puts("hello #{count}, #{inspect msg}")
+        hello(count)
+    end
+  end
 
-#   def len([h|t]), do: h + len(t)
-
-#   def double([]), do: []
-#   def double([head | tail]), do: [2 * head | double(tail)]
-
-#   def square([]), do: []
-#   def square([head | tail]), do: [ head * head | square(tail)]
-
-#   def sum_pairs([]), do: []
-#   def sum_pairs([h1,h2 | t]), do: [h1+h2 | sum_pairs(t) ]
-
-#   def even_length([]), do: true
-#   def even_length([h]), do: false
-#   def even_length([h | t]), do: h && !even_length(t)
-
-# end
+end
