@@ -12,7 +12,6 @@ defmodule Dictionary.Runtime.Application do
     ]
 
     Supervisor.start_link(children, option)
-    # Dictionary.Runtime.Server.start_link()
   end
 
 
